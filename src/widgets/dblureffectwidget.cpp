@@ -21,6 +21,7 @@
 #include "util/dwindowmanagerhelper.h"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QBackingStore>
 #include <QPaintEvent>
 #include <QDebug>

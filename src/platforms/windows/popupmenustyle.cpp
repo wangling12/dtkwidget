@@ -20,6 +20,7 @@
 #include <QPixmap>
 #include <QPixmapCache>
 #include <QPainter>
+#include <QPainterPath>
 #include <QStyleOption>
 #include <QStyleOptionMenuItem>
 

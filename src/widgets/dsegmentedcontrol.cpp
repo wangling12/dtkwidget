@@ -17,6 +17,7 @@
 
 #include <QDebug>
 #include <QPainter>
+#include <QPainterPath>
 #include <QPaintEvent>
 #include <QApplication>
 

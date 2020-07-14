@@ -24,6 +24,7 @@
 #include "dthememanager.h"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QMouseEvent>
 #include <QStyleOption>
 #include <QStylePainter>

@@ -21,6 +21,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsEffect>
 #include <QPainter>
+#include <QPainterPath>
 
 #include "dtkwidget_global.h"
 

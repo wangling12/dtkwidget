@@ -25,6 +25,7 @@
 #include <QTemporaryFile>
 #include <QImage>
 #include <QPainter>
+#include <QPainterPath>
 #include <QGuiApplication>
 #include <QWindow>
 

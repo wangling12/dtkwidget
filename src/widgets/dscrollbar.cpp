@@ -24,6 +24,7 @@
 #include <QTimer>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QPainterPath>
 #include <QDebug>
 
 DWIDGET_BEGIN_NAMESPACE

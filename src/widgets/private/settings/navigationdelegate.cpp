@@ -18,6 +18,7 @@
 #include "navigationdelegate.h"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QDebug>
 
 class NavigationDelegatePrivate

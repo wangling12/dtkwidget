@@ -20,6 +20,7 @@
 #include "private/mpris/dmprismonitor.h"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QDebug>
 #include <QVBoxLayout>
 

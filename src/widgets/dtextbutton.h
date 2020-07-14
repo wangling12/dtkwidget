@@ -20,6 +20,7 @@
 
 #include <QPushButton>
 #include <QPainter>
+#include <QPainterPath>
 
 #include "dtkwidget_global.h"
 

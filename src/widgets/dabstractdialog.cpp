@@ -21,6 +21,7 @@
 #include <QPushButton>
 #include <QScreen>
 #include <QPainter>
+#include <QPainterPath>
 #include <QWidget>
 #include <QLabel>
 #include <QDebug>

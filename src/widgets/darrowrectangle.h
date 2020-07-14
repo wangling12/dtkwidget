@@ -25,6 +25,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPainter>
+#include <QPainterPath>
 #include <QTimer>
 #include <QDebug>
 

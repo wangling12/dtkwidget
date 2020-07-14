@@ -20,6 +20,7 @@
 
 #include <QDebug>
 #include <QPainter>
+#include <QPainterPath>
 
 DWIDGET_BEGIN_NAMESPACE
 

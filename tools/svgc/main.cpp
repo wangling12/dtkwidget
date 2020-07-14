@@ -4,6 +4,7 @@
 #include <QSvgRenderer>
 #include <QImage>
 #include <QPainter>
+#include <QPainterPath>
 
 #include "DSvgRenderer"
 

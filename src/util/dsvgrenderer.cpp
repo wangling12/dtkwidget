@@ -21,6 +21,7 @@
 #include "dobject_p.h"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QFile>
 #include <QDebug>
 #include <QApplication>

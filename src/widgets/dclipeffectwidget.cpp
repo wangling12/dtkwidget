@@ -21,6 +21,7 @@
 #include <QEvent>
 #include <QBackingStore>
 #include <QPainter>
+#include <QPainterPath>
 #include <QPaintEvent>
 #include <QDebug>
 

@@ -22,6 +22,7 @@
 #include <QPixmap>
 #include <QWidget>
 #include <QPainter>
+#include <QPainterPath>
 #include <QEvent>
 
 DWIDGET_BEGIN_NAMESPACE

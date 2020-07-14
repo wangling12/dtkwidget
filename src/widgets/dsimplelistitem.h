@@ -27,6 +27,7 @@
 #include <dtkwidget_global.h>
 #include <QObject>
 #include <QPainter>
+#include <QPainterPath>
 
 DWIDGET_BEGIN_NAMESPACE
 

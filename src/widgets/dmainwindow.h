@@ -21,6 +21,7 @@
 #include "dtkwidget_global.h"
 #include "dobject.h"
 
+#include <QPainterPath>
 #include <QMainWindow>
 
 DWIDGET_BEGIN_NAMESPACE

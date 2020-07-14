@@ -19,6 +19,7 @@
 #define DBLUREFFECTWIDGET_P_H
 
 #include <DObjectPrivate>
+#include <QPainterPath>
 #include "dblureffectwidget.h"
 
 DWIDGET_BEGIN_NAMESPACE

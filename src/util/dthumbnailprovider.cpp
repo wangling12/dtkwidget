@@ -28,6 +28,7 @@
 #include <QReadWriteLock>
 #include <QWaitCondition>
 #include <QPainter>
+#include <QPainterPath>
 #include <QUrl>
 #include <QDebug>
 

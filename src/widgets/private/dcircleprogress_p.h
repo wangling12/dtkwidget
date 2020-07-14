@@ -23,6 +23,7 @@
 #include <DObjectPrivate>
 
 #include <QPainter>
+#include <QPainterPath>
 
 DWIDGET_BEGIN_NAMESPACE
 
