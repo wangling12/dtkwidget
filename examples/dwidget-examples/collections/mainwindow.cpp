@@ -45,6 +45,7 @@
 #include "graphicseffecttab.h"
 #include "simplelistviewtab.h"
 #include "dtoast.h"
+#include "dprintpreviewdialog.h"
 
 #ifndef DTK_NO_MULTIMEDIA
 #include "cameraform.h"
@@ -144,7 +145,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     titlebar->addWidget(new DSearchEdit(titlebar));
 
-    QPushButton *pb1 = new QPushButton("button1");
+    QPushButton *pb1 = new QPushButton("DPrintPreviewDialog");
+    connect(pb1, &QPushButton::clicked, [=]() {
+        DPrintPreviewDialog *dialog = new DPrintPreviewDialog(this);
+        dialog->exec();
+    });
     QPushButton *pb2 = new QPushButton("button2");
 
     QLineEdit *le = new QLineEdit("lineEdit");
