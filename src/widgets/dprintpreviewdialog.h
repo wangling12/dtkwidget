@@ -11,6 +11,13 @@ class DPrintPreviewDialog : public DDialog
 public:
     explicit DPrintPreviewDialog(QWidget *parent = nullptr);
 
+
+public Q_SLOTS:
+    void showAdvanceSetting();
+
+Q_SIGNALS:
+
+
     D_DECLARE_PRIVATE(DPrintPreviewDialog)
 };
 
