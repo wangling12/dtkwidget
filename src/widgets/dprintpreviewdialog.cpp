@@ -4,6 +4,8 @@
 #include "diconbutton.h"
 #include "dlabel.h"
 #include "dlineedit.h"
+#include "dfloatingbutton.h"
+#include "dswitchbutton.h"
 #include <DSpinBox>
 #include <DBackgroundGroup>
 #include <DApplicationHelper>
@@ -142,16 +144,13 @@ void DPrintPreviewDialogPrivate::initbasicui()
     QVBoxLayout *layout = new QVBoxLayout(basicsettingwdg);
     layout->setSpacing(10);
     DLabel *basicLabel = new DLabel(q->tr("Basic"), basicsettingwdg);
+    setwidgetfont(basicLabel);
     QHBoxLayout *basictitlelayout = new QHBoxLayout;
     layout->addLayout(basictitlelayout);
     basictitlelayout->setContentsMargins(0, 0, 0, 0);
     basictitlelayout->addWidget(basicLabel);
     basictitlelayout->setAlignment(basicLabel, Qt::AlignLeft | Qt::AlignBottom);
 
-    QFont font = basicLabel->font();
-    font.setBold(true);
-    basicLabel->setFont(font);
-    DFontSizeManager::instance()->bind(basicLabel, DFontSizeManager::T5);
     //打印机选择
     DFrame *printerFrame = new DFrame(basicsettingwdg);
     layout->addWidget(printerFrame);
@@ -160,12 +159,12 @@ void DPrintPreviewDialogPrivate::initbasicui()
     QHBoxLayout *printerlayout = new QHBoxLayout(printerFrame);
     printerlayout->setContentsMargins(10, 0, 10, 0);
     DLabel *printerlabel = new DLabel(q->tr("Printer"), printerFrame);
-    printDeviceComBox = new DComboBox(basicsettingwdg);
-    printDeviceComBox->setFixedSize(275, 36);
+    printDeviceCombo = new DComboBox(basicsettingwdg);
+    printDeviceCombo->setFixedSize(275, 36);
     printerlayout->addWidget(printerlabel);
-    printerlayout->addWidget(printDeviceComBox);
+    printerlayout->addWidget(printDeviceCombo);
 //    printerlayout->setAlignment(printerlabel, Qt::AlignVCenter);
-    printerlayout->setAlignment(printDeviceComBox, Qt::AlignVCenter);
+    printerlayout->setAlignment(printDeviceCombo, Qt::AlignVCenter);
 
     //打印份数
     DFrame *copycountFrame = new DFrame(basicsettingwdg);
@@ -190,34 +189,31 @@ void DPrintPreviewDialogPrivate::initbasicui()
     setfrmaeback(pageFrame);
     QVBoxLayout *pagelayout = new QVBoxLayout(pageFrame);
     DLabel *pagerangelabel = new DLabel(q->tr("Page range"), pageFrame);
-    pagerangeBox = new DComboBox(pageFrame);
-    pagerangeBox->addItem(q->tr("All"));
-    pagerangeBox->addItem(q->tr("Current page"));
-    pagerangeBox->addItem(q->tr("Select pages"));
+    pageRangeCombo = new DComboBox(pageFrame);
+    pageRangeCombo->addItem(q->tr("All"));
+    pageRangeCombo->addItem(q->tr("Current page"));
+    pageRangeCombo->addItem(q->tr("Select pages"));
     QHBoxLayout *hrangebox = new QHBoxLayout();
     hrangebox->addWidget(pagerangelabel);
-    hrangebox->addWidget(pagerangeBox);
+    hrangebox->addWidget(pageRangeCombo);
 
     DLabel *fromLabel = new DLabel(q->tr("From"), pageFrame);
-    fromeBox = new DSpinBox(pageFrame);
+    fromeSpin = new DSpinBox(pageFrame);
     DLabel *toLabel = new DLabel(q->tr("To"), pageFrame);
-    toBox = new DSpinBox(pageFrame);
-    fromeBox->setEnabledEmbedStyle(true);
-    toBox->setEnabledEmbedStyle(true);
+    toSpin = new DSpinBox(pageFrame);
+    fromeSpin->setEnabledEmbedStyle(true);
+    toSpin->setEnabledEmbedStyle(true);
     QHBoxLayout *hfromtolayout = new QHBoxLayout();
     hfromtolayout->addWidget(fromLabel);
-    hfromtolayout->addWidget(fromeBox);
+    hfromtolayout->addWidget(fromeSpin);
     hfromtolayout->addWidget(toLabel);
-    hfromtolayout->addWidget(toBox);
+    hfromtolayout->addWidget(toSpin);
     pagelayout->addLayout(hrangebox);
     pagelayout->addLayout(hfromtolayout);
 
     //打印方向
     DLabel *orientationLabel = new DLabel(q->tr("Orientation"), basicsettingwdg);
-    font = orientationLabel->font();
-    font.setBold(true);
-    orientationLabel->setFont(font);
-    DFontSizeManager::instance()->bind(orientationLabel, DFontSizeManager::T5);
+    setwidgetfont(orientationLabel);
     QHBoxLayout *orientationtitlelayout = new QHBoxLayout;
     orientationtitlelayout->addWidget(orientationLabel);
     orientationtitlelayout->setAlignment(orientationLabel, Qt::AlignLeft | Qt::AlignBottom);
@@ -225,9 +221,10 @@ void DPrintPreviewDialogPrivate::initbasicui()
 
     QVBoxLayout *orientationlayout = new QVBoxLayout;
     orientationlayout->setContentsMargins(0, 0, 0, 0);
-    verRadio = new DRadioButton;
-    horRadio = new DRadioButton;
-    orientationgroup = new QButtonGroup(basicsettingwdg);
+    DRadioButton *verRadio = new DRadioButton;
+    verRadio->setText("sbkebcmj");
+    DRadioButton *horRadio = new DRadioButton;
+    orientationgroup = new QButtonGroup(q);
     orientationgroup->addButton(verRadio, 0);
     orientationgroup->addButton(horRadio, 1);
 
@@ -270,7 +267,7 @@ void DPrintPreviewDialogPrivate::initadvanceui()
     Q_Q(DPrintPreviewDialog);
     QVBoxLayout *layout = new QVBoxLayout(advancesettingwdg);
     layout->setContentsMargins(0, 0, 0, 0);
-    advancesettingwdg->setMinimumSize(422, 800);
+    advancesettingwdg->setFixedWidth(442);
     //页面设置
     QVBoxLayout *pagelayout = new QVBoxLayout;
     pagelayout->setSpacing(10);
@@ -284,15 +281,65 @@ void DPrintPreviewDialogPrivate::initadvanceui()
     DFrame  *colorframe = new DFrame;
     setfrmaeback(colorframe);
     colorframe->setFixedHeight(48);
+    QHBoxLayout *colorlayout = new QHBoxLayout(colorframe);
+    DLabel *colorlabel = new DLabel(q->tr("Color mode"));
+    colorlabel->setFixedWidth(123);
+    colorModeCombo = new DComboBox;
+    colorModeCombo->addItems(QStringList() << q->tr("Color") << q->tr("Grayscale"));
+    colorlayout->addWidget(colorlabel);
+    colorlayout->addWidget(colorModeCombo);
+    colorlayout->setContentsMargins(10, 4, 10, 4);
 
     DFrame *marginsframe = new DFrame;
     setfrmaeback(marginsframe);
     marginsframe->setFixedHeight(102);
+    QVBoxLayout *marginslayout = new QVBoxLayout(marginsframe);
+    marginslayout->setSpacing(10);
+    QHBoxLayout *marginscombolayout = new QHBoxLayout;
+    marginscombolayout->setContentsMargins(0, 0, 0, 0);
+    DLabel *marginlabel = new DLabel(q->tr("Margins"));
+    marginlabel->setFixedWidth(123);
+    marginsCombo = new DComboBox;
+    marginsCombo->setFixedHeight(36);
+    marginscombolayout->addWidget(marginlabel);
+    marginscombolayout->addWidget(marginsCombo);
+    marginslayout->addLayout(marginscombolayout);
+
+    QHBoxLayout *marginsspinlayout = new QHBoxLayout;
+    marginsspinlayout->setSpacing(5);
+    DLabel *toplabel = new DLabel(q->tr("Top"));
+    marginTopSpin = new DSpinBox;
+    marginTopSpin->setEnabledEmbedStyle(true);
+    marginTopSpin->setMinimum(0);
+    //marginTopSpin->setFixedSize(71, 36);
+    DLabel *bottomlabel = new DLabel(q->tr("Bottom"));
+    marginBottomSpin = new DSpinBox;
+    marginBottomSpin->setEnabledEmbedStyle(true);
+    marginBottomSpin->setMinimum(0);
+    // marginBottomSpin->setFixedSize(71, 36);
+    DLabel *leftlabel = new DLabel(q->tr("Left"));
+    marginLeftSpin = new DSpinBox;
+    marginLeftSpin->setEnabledEmbedStyle(true);
+    marginLeftSpin->setMinimum(0);
+    // marginLeftSpin->setFixedSize(71, 36);
+    DLabel *rightlabel = new DLabel(q->tr("Right"));
+    marginRightSpin = new DSpinBox;
+    marginRightSpin->setEnabledEmbedStyle(true);
+    marginRightSpin->setMinimum(0);
+    //marginRightSpin->setFixedSize(71, 36);
+    marginsspinlayout->addWidget(toplabel);
+    marginsspinlayout->addWidget(marginTopSpin);
+    marginsspinlayout->addWidget(bottomlabel);
+    marginsspinlayout->addWidget(marginBottomSpin);
+    marginsspinlayout->addWidget(leftlabel);
+    marginsspinlayout->addWidget(marginLeftSpin);
+    marginsspinlayout->addWidget(rightlabel);
+    marginsspinlayout->addWidget(marginRightSpin);
+    marginslayout->addLayout(marginsspinlayout);
 
     pagelayout->addLayout(pagestitlelayout);
     pagelayout->addWidget(colorframe);
     pagelayout->addWidget(marginsframe);
-
     layout->addLayout(pagelayout);
 
     //缩放
@@ -300,31 +347,48 @@ void DPrintPreviewDialogPrivate::initadvanceui()
     scalinglayout->setContentsMargins(10, 0, 10, 0);
     DLabel *scalingLabel = new DLabel(q->tr("Scaling"), advancesettingwdg);
     QHBoxLayout *scalingtitlelayout = new QHBoxLayout;
-    scalingtitlelayout->setContentsMargins(0, 0, 0, 0);
+    scalingtitlelayout->setContentsMargins(0, 20, 0, 0);
     scalingtitlelayout->addWidget(scalingLabel, Qt::AlignLeft | Qt::AlignBottom);
     setwidgetfont(scalingLabel, DFontSizeManager::T5);
 
+    scaleGroup = new QButtonGroup(q);
     QVBoxLayout *scalingcontentlayout = new QVBoxLayout;
     scalingcontentlayout->setContentsMargins(0, 0, 0, 0);
     DWidget *fitwdg = new DWidget;
     fitwdg->setFixedHeight(48);
-
+    QHBoxLayout *fitlayout = new QHBoxLayout(fitwdg);
+    DRadioButton *fitPaperRadio = new DRadioButton(q->tr("Fit to paper size"));
+    scaleGroup->addButton(fitPaperRadio, 0);
+    fitlayout->addWidget(fitPaperRadio);
     DWidget *actualwdg = new DWidget;
     actualwdg->setFixedHeight(48);
-
+    QHBoxLayout *actuallayout = new QHBoxLayout(actualwdg);
+    DRadioButton *actualSizeRadio = new DRadioButton(q->tr("Actual size"));
+    scaleGroup->addButton(actualSizeRadio, 1);
+    actuallayout->addWidget(actualSizeRadio);
     DWidget *shrinkwdg = new DWidget;
     shrinkwdg->setFixedHeight(48);
-
+    QHBoxLayout *shrinklayout = new QHBoxLayout(shrinkwdg);
+    DRadioButton *shrinkPageRadio = new DRadioButton(q->tr("Shrink oversized pages"));
+    scaleGroup->addButton(shrinkPageRadio, 2);
+    shrinklayout->addWidget(shrinkPageRadio);
     DWidget *customscalewdg = new DWidget;
     customscalewdg->setFixedHeight(48);
-
+    QHBoxLayout *customlayout = new QHBoxLayout(customscalewdg);
+    colorlayout->setContentsMargins(10, 1, 10, 1);
+    DRadioButton *customSizeRadio = new DRadioButton(q->tr("Scale"));
+    scaleGroup->addButton(customSizeRadio, 3);
+    scaleRateEdit = new DLineEdit;
+    scaleRateEdit->setFixedWidth(78);
+    customlayout->addWidget(customSizeRadio);
+    customlayout->addWidget(scaleRateEdit);
+    customlayout->addStretch(1);
     scalingcontentlayout->addWidget(fitwdg);
     scalingcontentlayout->addWidget(actualwdg);
     scalingcontentlayout->addWidget(shrinkwdg);
     scalingcontentlayout->addWidget(customscalewdg);
-
     DBackgroundGroup *back = new DBackgroundGroup(scalingcontentlayout);
-    back->setItemSpacing(2);
+    back->setItemSpacing(1);
     DPalette pa = DApplicationHelper::instance()->palette(back);
     pa.setBrush(DPalette::Base, pa.itemBackground());
     DApplicationHelper::instance()->setPalette(back, pa);
@@ -338,68 +402,160 @@ void DPrintPreviewDialogPrivate::initadvanceui()
     DLabel *paperLabel = new DLabel(q->tr("Paper"), advancesettingwdg);
     setwidgetfont(paperLabel, DFontSizeManager::T5);
     QHBoxLayout *papertitlelayout = new QHBoxLayout;
-    papertitlelayout->setContentsMargins(0, 0, 0, 0);
+    papertitlelayout->setContentsMargins(0, 20, 0, 0);
     papertitlelayout->addWidget(paperLabel, Qt::AlignLeft | Qt::AlignBottom);
 
     DFrame  *paperframe = new DFrame;
     setfrmaeback(paperframe);
     paperframe->setFixedHeight(48);
+    QHBoxLayout *paperframelayout = new QHBoxLayout(paperframe);
+    DLabel *papersizelabel = new DLabel(q->tr("Paper size"));
+    papersizelabel->setFixedWidth(123);
+    paperSizeCombo = new DComboBox;
+    paperSizeCombo->setFixedHeight(36);
+    paperframelayout->addWidget(papersizelabel);
+    paperframelayout->addWidget(paperSizeCombo);
+    paperframelayout->setContentsMargins(10, 4, 10, 4);
     paperlayout->addLayout(papertitlelayout);
     paperlayout->addWidget(paperframe);
     layout->addLayout(paperlayout);
-    {
-        //打印方式
-        QVBoxLayout *drawinglayout = new QVBoxLayout;
-        drawinglayout->setSpacing(10);
-        drawinglayout->setContentsMargins(10, 0, 10, 0);
-        DLabel *drawingLabel = new DLabel(q->tr("Layout"), advancesettingwdg);
-        setwidgetfont(drawingLabel, DFontSizeManager::T5);
-        QHBoxLayout *drawingtitlelayout = new QHBoxLayout;
-        drawingtitlelayout->setContentsMargins(0, 0, 0, 0);
-        drawingtitlelayout->addWidget(drawingLabel, Qt::AlignLeft | Qt::AlignBottom);
 
-        DFrame  *duplexframe = new DFrame;
-        setfrmaeback(duplexframe);
-        duplexframe->setFixedHeight(48);
+    //打印方式
+    QVBoxLayout *drawinglayout = new QVBoxLayout;
+    drawinglayout->setSpacing(10);
+    drawinglayout->setContentsMargins(10, 0, 10, 0);
+    DLabel *drawingLabel = new DLabel(q->tr("Layout"), advancesettingwdg);
+    setwidgetfont(drawingLabel, DFontSizeManager::T5);
+    QHBoxLayout *drawingtitlelayout = new QHBoxLayout;
+    drawingtitlelayout->setContentsMargins(0, 20, 0, 0);
+    drawingtitlelayout->addWidget(drawingLabel, Qt::AlignLeft | Qt::AlignBottom);
 
-        DFrame  *drawingframe = new DFrame;
-        setfrmaeback(drawingframe);
-        drawingframe->setFixedHeight(94);
+    DFrame  *duplexframe = new DFrame;
+    setfrmaeback(duplexframe);
+    duplexframe->setFixedHeight(48);
+    QHBoxLayout *duplexlayout = new QHBoxLayout(duplexframe);
+    DLabel *duplexlabel = new DLabel(q->tr("Duplex"));
+    duplexSwitchBtn = new DSwitchButton;
+    duplexlayout->addWidget(duplexlabel);
+    duplexlayout->addStretch(1);
+    duplexlayout->addWidget(duplexSwitchBtn, Qt::AlignRight);
 
+    DFrame  *drawingframe = new DFrame;
+    setfrmaeback(drawingframe);
+    drawingframe->setFixedHeight(94);
+    QVBoxLayout *drawingframelayout = new QVBoxLayout(drawingframe);
+    drawingframelayout->setSpacing(10);
+    QHBoxLayout *pagepersheetlayout = new QHBoxLayout;
+    pagepersheetlayout->setContentsMargins(0, 0, 0, 0);
+    DLabel *sheetlabel = new DLabel(q->tr("Pages per sheet"));
+    sheetlabel->setFixedWidth(123);
+    pagePerSheetCombo = new DComboBox;
+    pagePerSheetCombo->setFixedHeight(36);
+    pagepersheetlayout->addWidget(sheetlabel);
+    pagepersheetlayout->addWidget(pagePerSheetCombo);
+    drawingframelayout->addLayout(pagepersheetlayout);
 
-        drawinglayout->addLayout(drawingtitlelayout);
-        drawinglayout->addWidget(duplexframe);
-        drawinglayout->addWidget(drawingframe);
-        layout->addLayout(drawinglayout);
-    }
+    QHBoxLayout *printdirectlayout = new QHBoxLayout;
+    printdirectlayout->setContentsMargins(0, 0, 0, 0);
+    printdirectlayout->setSpacing(10);
+    DLabel *directlabel = new DLabel(q->tr("Layout direction"));
+    directlabel->setFixedWidth(123);
+    lrtbBtn = new DIconButton(DStyle::SP_IncreaseElement);
+    rltbBtn = new DIconButton(DStyle::SP_IncreaseElement);
+    tblrBtn = new DIconButton(DStyle::SP_IncreaseElement);
+    tbrlBtn = new DIconButton(DStyle::SP_IncreaseElement);
+    printdirectlayout->addWidget(directlabel);
+    printdirectlayout->addWidget(lrtbBtn);
+    printdirectlayout->addWidget(rltbBtn);
+    printdirectlayout->addWidget(tblrBtn);
+    printdirectlayout->addWidget(tbrlBtn);
+    printdirectlayout->addStretch(1);
+    drawingframelayout->addLayout(printdirectlayout);
+
+    drawinglayout->addLayout(drawingtitlelayout);
+    drawinglayout->addWidget(duplexframe);
+    drawinglayout->addWidget(drawingframe);
+    layout->addLayout(drawinglayout);
+
     //打印顺序
-//    QVBoxLayout *orderlayout = new QVBoxLayout;
-//    orderlayout->setContentsMargins(10, 0, 10, 0);
-//    DLabel *orderLabel = new DLabel(q->tr("Page Order"), advancesettingwdg);
-//    setwidgetfont(orderLabel, DFontSizeManager::T5);
-//    QHBoxLayout *ordertitlelayout = new QHBoxLayout;
-//    ordertitlelayout->setContentsMargins(0, 0, 0, 0);
-//    ordertitlelayout->addWidget(orderLabel, Qt::AlignLeft | Qt::AlignBottom);
+    QVBoxLayout *orderlayout = new QVBoxLayout;
+    orderlayout->setContentsMargins(10, 0, 10, 0);
+    DLabel *orderLabel = new DLabel(q->tr("Page Order"), advancesettingwdg);
+    setwidgetfont(orderLabel, DFontSizeManager::T5);
+    QHBoxLayout *ordertitlelayout = new QHBoxLayout;
+    ordertitlelayout->setContentsMargins(0, 20, 0, 0);
+    ordertitlelayout->addWidget(orderLabel, Qt::AlignLeft | Qt::AlignBottom);
 
+    QVBoxLayout *ordercontentlayout = new QVBoxLayout;
+    ordercontentlayout->setContentsMargins(0, 0, 0, 0);
+    DWidget *collatewdg = new DWidget;
+    collatewdg->setFixedHeight(36);
+    QHBoxLayout *collatelayout = new QHBoxLayout(collatewdg);
+    printOrderGroup = new QButtonGroup(q);
+    DRadioButton *printCollateRadio = new DRadioButton(q->tr("Collate pages")); //逐份打印
+    printOrderGroup->addButton(printCollateRadio, 0);
+    collatelayout->addWidget(printCollateRadio);
 
+    DWidget *inorderwdg = new DWidget;
+    inorderwdg->setFixedHeight(48);
+    QHBoxLayout *inorderlayout = new QHBoxLayout(inorderwdg);
+    DRadioButton *printInOrderRadio = new DRadioButton(q->tr("Print pages in order")); //按顺序打印
+    printInOrderRadio->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Minimum);
+    printOrderGroup->addButton(printCollateRadio, 1);
+    inorderCombo = new DComboBox;
+    inorderlayout->addWidget(printInOrderRadio);
+    inorderlayout->addWidget(inorderCombo);
+
+    ordercontentlayout->addWidget(collatewdg);
+    ordercontentlayout->addWidget(inorderwdg);
+    DBackgroundGroup *backorder = new DBackgroundGroup(ordercontentlayout);
+    backorder->setItemSpacing(1);
+    pa = DApplicationHelper::instance()->palette(backorder);
+    pa.setBrush(DPalette::Base, pa.itemBackground());
+    DApplicationHelper::instance()->setPalette(backorder, pa);
+
+    orderlayout->addLayout(ordertitlelayout);
+    orderlayout->addWidget(backorder);
+    layout->addLayout(orderlayout);
 
     //水印
-//    QVBoxLayout *watermarklayout = new QVBoxLayout;
-//    watermarklayout->setContentsMargins(10, 0, 10, 0);
-//    DLabel *watermarkLabel = new DLabel(q->tr("Watermark"), advancesettingwdg);
-//    QHBoxLayout *watermarktitlelayout = new QHBoxLayout;
-//    watermarktitlelayout->setContentsMargins(0, 0, 0, 0);
-//    watermarktitlelayout->addWidget(watermarkLabel, Qt::AlignLeft | Qt::AlignBottom);
-//    setwidgetfont(watermarkLabel, DFontSizeManager::T5);
+    QVBoxLayout *watermarklayout = new QVBoxLayout;
+    watermarklayout->setContentsMargins(10, 0, 10, 0);
+    DLabel *watermarkLabel = new DLabel(q->tr("Watermark"), advancesettingwdg);
+    QHBoxLayout *watermarktitlelayout = new QHBoxLayout;
+    watermarktitlelayout->setContentsMargins(0, 20, 0, 0);
+    watermarktitlelayout->addWidget(watermarkLabel, Qt::AlignLeft | Qt::AlignBottom);
+    setwidgetfont(watermarkLabel, DFontSizeManager::T5);
 
+    DFrame *watermarkframe = new DFrame;
+    watermarkframe->setFixedHeight(94);
+    setfrmaeback(watermarkframe);
+    QVBoxLayout *watercontentlayout = new QVBoxLayout(watermarkframe);
+    watercontentlayout->setSpacing(10);
+    watercontentlayout->setContentsMargins(14, 10, 10, 10);
+    QHBoxLayout *texttypelayout = new QHBoxLayout;
+    texttypelayout->setContentsMargins(0, 0, 0, 0);
+    DLabel *addlabel = new DLabel(q->tr("Add watermark"));
+    addlabel->setFixedWidth(113);
+    waterTypeCombo = new DComboBox;
+    waterTypeCombo->setFixedHeight(36);
+    waterColorBtn = new DIconButton(DStyle::SP_IncreaseElement);
+    texttypelayout->addWidget(addlabel);
+    texttypelayout->addWidget(waterTypeCombo);
+    texttypelayout->addWidget(waterColorBtn);
+    QHBoxLayout *watereditlayout = new QHBoxLayout;
+    watereditlayout->setContentsMargins(0, 0, 0, 0);
+    waterTextEdit = new DLineEdit;
+    waterTextEdit->setFixedWidth(275);
+    waterTextEdit->setFixedHeight(36);
+    watereditlayout->addSpacerItem(new QSpacerItem(127, 2, QSizePolicy::Maximum));
+    watereditlayout->addWidget(waterTextEdit);
+    watercontentlayout->addLayout(texttypelayout);
+    watercontentlayout->addLayout(watereditlayout);
 
-
-
-
-
-
-
-
+    watermarklayout->addLayout(watermarktitlelayout);
+    watermarklayout->addWidget(watermarkframe);
+    layout->addLayout(watermarklayout);
 
 
 }

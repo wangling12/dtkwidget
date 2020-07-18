@@ -16,6 +16,7 @@ class DIconButton;
 class DLineEdit;
 class DLabel;
 class DSpinBox;
+class DSwitchButton;
 class DPrintPreviewDialogPrivate : public DDialogPrivate
 {
 public:
@@ -45,14 +46,32 @@ public:
     DPushButton *printBtn;
     DPushButton *advanceBtn;
     DScrollArea *scrollarea;
-    DComboBox *printDeviceComBox;
+    DComboBox *printDeviceCombo;
     DSpinBox *copycountspinbox;
-    DComboBox *pagerangeBox;
-    DSpinBox *fromeBox;
-    DSpinBox *toBox;
-    DRadioButton *verRadio;
-    DRadioButton *horRadio;
+    DComboBox *pageRangeCombo;
+    DSpinBox *fromeSpin;
+    DSpinBox *toSpin;
     QButtonGroup *orientationgroup;
+    DComboBox *colorModeCombo;
+    DComboBox *marginsCombo;
+    DSpinBox *marginTopSpin;
+    DSpinBox *marginBottomSpin;
+    DSpinBox *marginLeftSpin;
+    DSpinBox *marginRightSpin;
+    QButtonGroup *scaleGroup;
+    DLineEdit  *scaleRateEdit;
+    DComboBox *paperSizeCombo;
+    DSwitchButton *duplexSwitchBtn;
+    DComboBox *pagePerSheetCombo;
+    DIconButton *lrtbBtn;//左右上下
+    DIconButton *rltbBtn;//右左上下
+    DIconButton *tblrBtn;//上下左右
+    DIconButton *tbrlBtn;//上下右左
+    QButtonGroup *printOrderGroup;//打印顺序
+    DComboBox *inorderCombo;
+    DComboBox *waterTypeCombo;//添加水印类型
+    DIconButton *waterColorBtn;
+    DLineEdit *waterTextEdit;
     Q_DECLARE_PUBLIC(DPrintPreviewDialog)
 };
 

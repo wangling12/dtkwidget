@@ -8,6 +8,7 @@ DWIDGET_BEGIN_NAMESPACE
 class DPrintPreviewDialogPrivate;
 class DPrintPreviewDialog : public DDialog
 {
+    Q_OBJECT
 public:
     explicit DPrintPreviewDialog(QWidget *parent = nullptr);
 
@@ -15,9 +16,10 @@ public:
 public Q_SLOTS:
     void showAdvanceSetting();
 
+
 Q_SIGNALS:
 
-
+private:
     D_DECLARE_PRIVATE(DPrintPreviewDialog)
 };
 
