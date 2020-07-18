@@ -27,6 +27,7 @@ public:
     void initright(QVBoxLayout *layout);
     void initbasicui();
     void initadvanceui();
+    void initdata();
     void initconnections();
     void setfrmaeback(DWidget *frame);
     void showadvancesetting();

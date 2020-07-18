@@ -14,6 +14,8 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QButtonGroup>
+#include <QtPrintSupport/QPrinterInfo>
+#include <QDebug>
 
 DWIDGET_BEGIN_NAMESPACE
 void setwidgetfont(QWidget *widget, DFontSizeManager::SizeType type = DFontSizeManager::T5)
@@ -33,6 +35,7 @@ DPrintPreviewDialogPrivate::DPrintPreviewDialogPrivate(DPrintPreviewDialog *qq)
 void DPrintPreviewDialogPrivate::startup()
 {
     initui();
+    initdata();
     initconnections();
 }
 
@@ -556,8 +559,14 @@ void DPrintPreviewDialogPrivate::initadvanceui()
     watermarklayout->addLayout(watermarktitlelayout);
     watermarklayout->addWidget(watermarkframe);
     layout->addLayout(watermarklayout);
+}
 
-
+void DPrintPreviewDialogPrivate::initdata()
+{
+    Q_Q(DPrintPreviewDialog);
+    qDebug() << QPrinterInfo::availablePrinterNames();
+    printDeviceCombo->addItems(QPrinterInfo::availablePrinterNames());
+    printDeviceCombo->addItem(q->tr("Print to PDF"));
 }
 
 void DPrintPreviewDialogPrivate::initconnections()
