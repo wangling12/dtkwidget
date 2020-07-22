@@ -21,7 +21,8 @@
 #include <cups/cups.h>
 #include <private/qprint_p.h>
 #include <QTime>
-
+//#include <DSuggestButton>
+#include "dsuggestbutton.h"
 DWIDGET_BEGIN_NAMESPACE
 void setwidgetfont(QWidget *widget, DFontSizeManager::SizeType type = DFontSizeManager::T5)
 {
@@ -162,7 +163,7 @@ void DPrintPreviewDialogPrivate::initright(QVBoxLayout *layout)
     QHBoxLayout *pbottomlayout = new QHBoxLayout;
     pbottomlayout->setContentsMargins(0, 10, 0, 10);
     cancelBtn = new DPushButton(q->tr("Cancel"));
-    printBtn = new DPushButton(q->tr("Print"));
+    printBtn = new DSuggestButton(q->tr("Print"));
 
     cancelBtn->setFixedSize(170, 36);
     printBtn->setFixedSize(170, 36);
@@ -205,6 +206,7 @@ void DPrintPreviewDialogPrivate::initbasicui()
 
     //打印份数
     DFrame *copycountFrame = new DFrame(basicsettingwdg);
+    copycountFrame->setObjectName("copucountframe");
     layout->addWidget(copycountFrame);
     copycountFrame->setFixedSize(422, 48);
     setfrmaeback(copycountFrame);
@@ -213,7 +215,7 @@ void DPrintPreviewDialogPrivate::initbasicui()
     DLabel *copycountlabel = new DLabel(q->tr("Copies"), copycountFrame);
     copycountspinbox = new DSpinBox(copycountFrame);
     copycountspinbox->setEnabledEmbedStyle(true);
-    copycountspinbox->setMinimum(1);
+    copycountspinbox->setRange(1, 999);
     copycountspinbox->setFixedSize(275, 36);
     copycountlayout->addWidget(copycountlabel);
     copycountlayout->addWidget(copycountspinbox);
@@ -269,6 +271,7 @@ void DPrintPreviewDialogPrivate::initbasicui()
     QVBoxLayout *orientationlayout = new QVBoxLayout;
     orientationlayout->setContentsMargins(0, 0, 0, 0);
     DRadioButton *verRadio = new DRadioButton;
+    verRadio->setChecked(true);
 //    verRadio->setText("sbkebcmj");
     verRadio->setIcon(QIcon(":/assets/icons/light/icons/printer_portrait_40px.svg"));
     verRadio->setIconSize(QSize(36, 36));
@@ -363,8 +366,9 @@ void DPrintPreviewDialogPrivate::initadvanceui()
     QHBoxLayout *marginsspinlayout = new QHBoxLayout;
     marginsspinlayout->setSpacing(5);
     DLabel *toplabel = new DLabel(q->tr("Top"));
-    marginTopSpin = new DSpinBox;
-    marginTopSpin->setEnabledEmbedStyle(true);
+    marginTopSpin = new DDoubleSpinBox;
+//    marginTopSpin->lineEdit()->setClearButtonEnabled(false);
+//    marginTopSpin->setEnabledEmbedStyle(true);
     marginTopSpin->setMinimum(0);
     //marginTopSpin->setFixedSize(71, 36);
     DLabel *bottomlabel = new DLabel(q->tr("Bottom"));
@@ -633,12 +637,18 @@ void DPrintPreviewDialogPrivate::initadvanceui()
 void DPrintPreviewDialogPrivate::initdata()
 {
     Q_Q(DPrintPreviewDialog);
-    printer->setPrinterName("Canon-iR2520");
+    printDeviceCombo->addItems(QPrinterInfo::availablePrinterNames());
+    printDeviceCombo->addItem(q->tr("Print to PDF"));
     QPrinterInfo info(*printer);
     qDebug() << QPrinterInfo::availablePrinterNames() << info.supportedDuplexModes()
              << info.supportedPageSizes() << info.supportsCustomPageSizes();
-    printDeviceCombo->addItems(QPrinterInfo::availablePrinterNames());
-    printDeviceCombo->addItem(q->tr("Print to PDF"));
+    QStringList pageSizeList;
+    for (int i = 0; i < info.supportedPageSizes().size(); i++) {
+        pageSizeList.append(info.supportedPageSizes().at(i).name());
+    }
+    printer->setPrinterName(QPrinterInfo::availablePrinterNames().at(0));
+    paperSizeCombo->addItems(pageSizeList);
+    paperSizeCombo->setCurrentText("A4");
 }
 
 void DPrintPreviewDialogPrivate::initconnections()
@@ -792,10 +802,27 @@ void DPrintPreviewDialog::printerChanged(int index)
     qDebug() << info.supportedDuplexModes() << info.supportedPageSizes();
     if (index == d->printDeviceCombo->count() - 1) {
         //pdf
-
+        d->copycountspinbox->setDisabled(true);
+        d->copycountspinbox->setValue(1);
+        d->paperSizeCombo->clear();
+        d->paperSizeCombo->setEnabled(false);
+        d->duplexSwitchBtn->setEnabled(false);
+        d->printer->setOutputFormat(QPrinter::PdfFormat);
     } else {
         //actual printer
-
+        if (d->printer) {
+            d->copycountspinbox->setDisabled(false);
+            d->paperSizeCombo->clear();
+            d->paperSizeCombo->setEnabled(true);
+            d->duplexSwitchBtn->setEnabled(true);
+            d->printer->setOutputFormat(QPrinter::NativeFormat);
+            QStringList pageSizeList;
+            for (int i = 0; i < info.supportedPageSizes().size(); i++) {
+                pageSizeList.append(info.supportedPageSizes().at(i).name());
+            }
+            d->paperSizeCombo->addItems(pageSizeList);
+            d->paperSizeCombo->setCurrentText("A4");
+        }
     }
 }
 
@@ -807,12 +834,18 @@ void DPrintPreviewDialog::slotPageRangeCombox(int value)
     if (value == 0) {
         d->fromeSpin->setValue(1);
         d->toSpin->setValue(d->totalPageLabel->text().toInt());
+        d->printer->setPrintRange(QPrinter::AllPages);
+        d->printer->setFromTo(1, d->totalPageLabel->text().toInt());
     } else if (value == 1) {
         d->fromeSpin->setValue(d->jumpPageEdit->text().toInt());
         d->toSpin->setValue(d->jumpPageEdit->text().toInt());
+        d->printer->setPrintRange(QPrinter::CurrentPage);
+        d->printer->setFromTo(d->jumpPageEdit->text().toInt(), d->jumpPageEdit->text().toInt());
     } else {
         d->fromeSpin->setValue(d->jumpPageEdit->text().toInt());
         d->toSpin->setValue(d->totalPageLabel->text().toInt());
+        d->printer->setPrintRange(QPrinter::PageRange);
+        d->printer->setFromTo(d->fromeSpin->value(), d->toSpin->value());
     }
     qDebug() << d->jumpPageEdit->text().toInt();
 }
