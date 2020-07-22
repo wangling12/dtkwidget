@@ -16,7 +16,10 @@ public:
     ~DPrintPreviewDialog();
 
 public Q_SLOTS:
+
     void printerChanged(int index);
+    void slotPageRangeCombox(int value);
+    void slotPageMarginCombox(int value);
 
 
 Q_SIGNALS:

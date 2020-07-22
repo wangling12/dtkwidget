@@ -33,8 +33,11 @@ public:
     void setfrmaeback(DWidget *frame);
     void showadvancesetting();
 
+
     void test();
 
+
+    void setEnable(const int &value, DComboBox *combox);//控件可用
 
     //printer
     QPrinter *printer;
@@ -67,7 +70,7 @@ public:
     DSpinBox *marginLeftSpin;
     DSpinBox *marginRightSpin;
     QButtonGroup *scaleGroup;
-    DLineEdit  *scaleRateEdit;
+    DSpinBox  *scaleRateEdit;
     DComboBox *paperSizeCombo;
     DSwitchButton *duplexSwitchBtn;
     DComboBox *pagePerSheetCombo;
@@ -81,6 +84,8 @@ public:
     DIconButton *waterColorBtn;
     DLineEdit *waterTextEdit;
     Q_DECLARE_PUBLIC(DPrintPreviewDialog)
+
+
 };
 
 DWIDGET_END_NAMESPACE
