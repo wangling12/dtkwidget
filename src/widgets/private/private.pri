@@ -51,7 +51,8 @@ HEADERS += \
     $$PWD/dframe_p.h \
     $$PWD/ddrawer_p.h \
     $$PWD/dalertcontrol_p.h \
-    $$PWD/dprintpreviewdialog_p.h
+    $$PWD/dprintpreviewdialog_p.h \
+    $$PWD/dprintpreviewwidget_p.h
 
 SOURCES += \
     $$PWD/dthemehelper.cpp

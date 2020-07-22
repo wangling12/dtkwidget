@@ -37,10 +37,10 @@ DPrintPreviewDialogPrivate::DPrintPreviewDialogPrivate(DPrintPreviewDialog *qq)
 
 }
 
-void DPrintPreviewDialogPrivate::startup(QPrinter *printer)
+void DPrintPreviewDialogPrivate::startup(DPrinter *printer)
 {
     if (nullptr == printer) {
-        this ->printer = new QPrinter;
+        this ->printer = new DPrinter;
     } else {
         ownPrinter = true;
         this->printer = printer;
@@ -90,12 +90,12 @@ void DPrintPreviewDialogPrivate::initui()
 
 void DPrintPreviewDialogPrivate::initleft(QVBoxLayout *layout)
 {
-    pview = new DFrame;
-    pview->setFixedSize(364, 470);
+    pview = new DPrintPreviewWidget(this->printer);
+//    pview->setFixedSize(364, 470);
     setfrmaeback(pview);
     layout->setContentsMargins(10, 10, 10, 10);
     layout->addWidget(pview);
-    layout->setAlignment(pview, Qt::AlignCenter);
+//    layout->setAlignment(pview, Qt::AlignCenter);
     QHBoxLayout *pbottomlayout = new QHBoxLayout;
     pbottomlayout->setContentsMargins(0, 10, 0, 0);
     layout->addLayout(pbottomlayout);
@@ -118,6 +118,9 @@ void DPrintPreviewDialogPrivate::initleft(QVBoxLayout *layout)
     pbottomlayout->addStretch();
     pbottomlayout->addWidget(nextPageBtn);
     pbottomlayout->addWidget(lastBtn);
+
+    Q_Q(DPrintPreviewDialog);
+    QObject::connect(pview, &DPrintPreviewWidget::paintRequested, q, &DPrintPreviewDialog::paintRequested);
 }
 
 void DPrintPreviewDialogPrivate::initright(QVBoxLayout *layout)
@@ -766,7 +769,7 @@ DPrintPreviewDialog::DPrintPreviewDialog(QWidget *parent)
 
 }
 
-DPrintPreviewDialog::DPrintPreviewDialog(QPrinter *printer, QWidget *parent)
+DPrintPreviewDialog::DPrintPreviewDialog(DPrinter *printer, QWidget *parent)
     : DDialog(*new DPrintPreviewDialogPrivate(this), parent)
 {
     Q_D(DPrintPreviewDialog);

@@ -147,8 +147,20 @@ MainWindow::MainWindow(QWidget *parent)
 
     QPushButton *pb1 = new QPushButton("DPrintPreviewDialog");
     connect(pb1, &QPushButton::clicked, [=]() {
-        DPrintPreviewDialog *dialog = new DPrintPreviewDialog(this);
-        dialog->exec();
+        DPrintPreviewDialog dialog(this);
+        connect(&dialog, &DPrintPreviewDialog::paintRequested,
+                this, [=] (DPrinter *_printer){
+            _printer->setFromTo(1,1);
+            QPainter painter(_printer);
+            double xscale = _printer->pageRect().width() / double(this->width());
+            double yscale = _printer->pageRect().height() / double(this->height());
+            double scale = qMin(xscale, yscale);
+            painter.translate(_printer->paperRect().center());
+            painter.scale(scale, scale);
+            painter.translate(-this->width()/ 2, -this->height()/ 2);
+            this->render(&painter);
+        });
+        dialog.exec();
     });
     QPushButton *pb2 = new QPushButton("button2");
 
