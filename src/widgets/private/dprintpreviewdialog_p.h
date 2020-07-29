@@ -68,6 +68,7 @@ public:
     void _q_printerChanged(int index);
     void _q_pageRangeChanged(int index);
     void _q_pageMarginChanged(int index);
+    void _q_ColorModeChange(int index);
     void _q_startPrint(bool clicked);
 
     //printer
