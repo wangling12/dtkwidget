@@ -50,14 +50,9 @@ DPrintPreviewDialogPrivate::DPrintPreviewDialogPrivate(DPrintPreviewDialog *qq)
 
 }
 
-void DPrintPreviewDialogPrivate::startup(DPrinter *printer)
+void DPrintPreviewDialogPrivate::startup()
 {
-    if (nullptr == printer) {
-        this ->printer = new DPrinter;
-    } else {
-        ownPrinter = true;
-        this->printer = printer;
-    }
+    this->printer = new DPrinter;
     QTime tm;
     tm.start();
     //临时测试方法后期移除
@@ -1026,18 +1021,10 @@ DPrintPreviewDialog::DPrintPreviewDialog(QWidget *parent)
     d->startup();
 }
 
-DPrintPreviewDialog::DPrintPreviewDialog(DPrinter *printer, QWidget *parent)
-    : DDialog(*new DPrintPreviewDialogPrivate(this), parent)
-{
-    Q_D(DPrintPreviewDialog);
-    setFixedSize(851, 606);
-    d->startup(printer);
-}
-
 DPrintPreviewDialog::~DPrintPreviewDialog()
 {
     Q_D(DPrintPreviewDialog);
-    if (d->ownPrinter)
+    if (nullptr == d->printer)
         delete d->printer;
 }
 
