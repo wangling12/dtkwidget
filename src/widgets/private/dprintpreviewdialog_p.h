@@ -93,10 +93,7 @@ public:
     DComboBox *printDeviceCombo;
     DSpinBox *copycountspinbox;
     DComboBox *pageRangeCombo;
-    DSpinBox *fromeSpin;
-    DSpinBox *toSpin;
-    DLabel *fromLabel;
-    DLabel *toLabel;
+    DLineEdit *pageRangeEdit;
     QButtonGroup *orientationgroup;
     DComboBox *colorModeCombo;
     DComboBox *marginsCombo;
