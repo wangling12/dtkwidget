@@ -786,6 +786,7 @@ void DPrintPreviewDialogPrivate::updateSetteings(int index)
     paperSizeCombo->setCurrentIndex(0);
     _q_pageRangeChanged(0);
     _q_pageMarginChanged(0);
+    _q_orientationChanged(0);
     scaleGroup->button(1)->setChecked(true);
     orientationgroup->button(0)->setChecked(true);
     scaleRateEdit->setValue(90);
@@ -1011,7 +1012,8 @@ void DPrintPreviewDialogPrivate::_q_startPrint(bool clicked)
             return;
         printer->setOutputFileName(str);
     }
-    Q_EMIT q->paintRequested(printer);
+    //    Q_EMIT q->paintRequested(printer);
+    pview->print();
 
     q->done(0);
 }
