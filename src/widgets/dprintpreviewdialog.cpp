@@ -663,6 +663,7 @@ void DPrintPreviewDialogPrivate::initconnections()
     QObject::connect(pview, &DPrintPreviewWidget::totalPages, [this](int pages) {
         totalPageLabel->setText(QString::number(pages));
         totalPages = pages;
+        pageRangeEdit->setText("1-" + QString::number(totalPages));
     });
     QObject::connect(firstBtn, &DIconButton::clicked, pview, &DPrintPreviewWidget::turnBegin);
     QObject::connect(prevPageBtn, &DIconButton::clicked, pview, &DPrintPreviewWidget::turnFront);
@@ -862,7 +863,7 @@ void DPrintPreviewDialogPrivate::updateSetteings(int index)
     scaleGroup->button(1)->setChecked(true);
     orientationgroup->button(0)->setChecked(true);
     scaleRateEdit->setValue(90);
-    pageRangeEdit->lineEdit()->setPlaceholderText(q->tr("Please use “,” or “-” to separate the page numbers (1,3,5,7-12)"));
+    pageRangeEdit->lineEdit()->setPlaceholderText("1,3,5-7,11-15,18,21");
     marginsCombo->setCurrentIndex(0);
 
     if (index != printDeviceCombo->count() - 1) {
@@ -964,7 +965,6 @@ void DPrintPreviewDialogPrivate::_q_printerChanged(int index)
         //pdf
         copycountspinbox->setDisabled(true);
         copycountspinbox->setValue(1);
-        paperSizeCombo->clear();
         duplexSwitchBtn->setChecked(false);
         duplexSwitchBtn->setEnabled(false);
         colorModeCombo->setEnabled(false);
@@ -973,7 +973,6 @@ void DPrintPreviewDialogPrivate::_q_printerChanged(int index)
         //actual printer
         if (printer) {
             copycountspinbox->setDisabled(false);
-            paperSizeCombo->clear();
             paperSizeCombo->setEnabled(true);
             duplexSwitchBtn->setEnabled(true);
             colorModeCombo->setEnabled(true);
@@ -992,6 +991,7 @@ void DPrintPreviewDialogPrivate::_q_pageRangeChanged(int index)
     setEnable(index, pageRangeCombo);
     QVector<int> pagesrange;
     if (index == PAGERANGE_ALL) {
+        qDebug() << totalPages;
         if (totalPages != 0) {
             totalPageLabel->setNum(totalPages);
             printer->setPrintRange(QPrinter::AllPages);
@@ -1001,10 +1001,8 @@ void DPrintPreviewDialogPrivate::_q_pageRangeChanged(int index)
                 pagesrange.append(i);
             }
             pageRangeEdit->setText("1-" + totalPageLabel->text());
-            qDebug() << "121212";
         }
     } else if (index == PAGERANGE_CURRENT) {
-        pagesrange.clear();
         pagesrange.clear();
         pagesrange.append(jumpPageEdit->value());
         pageRangeEdit->setText(jumpPageEdit->text());
