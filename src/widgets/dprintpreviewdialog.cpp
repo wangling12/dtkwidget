@@ -683,7 +683,6 @@ void DPrintPreviewDialogPrivate::initconnections()
     QObject::connect(pview, &DPrintPreviewWidget::totalPages, [this](int pages) {
         totalPageLabel->setText(QString::number(pages));
         totalPages = pages;
-        pageRangeEdit->setText("1-" + QString::number(totalPages));
     });
     QObject::connect(pview, &DPrintPreviewWidget::pagesCountChanged, totalPageLabel, static_cast<void (QLabel::*)(int)>(&QLabel::setNum));
     QObject::connect(firstBtn, &DIconButton::clicked, pview, &DPrintPreviewWidget::turnBegin);
@@ -735,7 +734,7 @@ void DPrintPreviewDialogPrivate::initconnections()
         if (scaleGroup->checkedId() == SCALE) {
             qreal scale = scaleRateEdit->value() / 100.0;
             pview->setScale(scale);
-            pview->updatePreview();
+            pview->updateView();
         }
     });
     QObject::connect(scaleGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), q, [this](int id) {
@@ -745,7 +744,7 @@ void DPrintPreviewDialogPrivate::initconnections()
             qreal scale = scaleRateEdit->value() / 100.0;
             pview->setScale(scale);
         }
-        pview->updatePreview();
+        pview->updateView();
     });
 
     QObject::connect(marginTimer, SIGNAL(timeout()), q, SLOT(_q_marginTimerOut()));
@@ -884,7 +883,6 @@ void DPrintPreviewDialogPrivate::updateSetteings(int index)
     scaleGroup->button(1)->setChecked(true);
     orientationgroup->button(0)->setChecked(true);
     scaleRateEdit->setValue(100);
-    pageRangeEdit->lineEdit()->setPlaceholderText("1,3,5-7,11-15,18,21");
     marginsCombo->setCurrentIndex(0);
 
     if (index != printDeviceCombo->count() - 1) {
@@ -1013,6 +1011,8 @@ void DPrintPreviewDialogPrivate::_q_printerChanged(int index)
 void DPrintPreviewDialogPrivate::_q_pageRangeChanged(int index)
 {
     setEnable(index, pageRangeCombo);
+    pageRangeEdit->lineEdit()->setPlaceholderText("");
+    pageRangeEdit->setText("");
     QVector<int> pagesrange;
     if (index == PAGERANGE_ALL) {
         qDebug() << totalPages;
@@ -1020,21 +1020,16 @@ void DPrintPreviewDialogPrivate::_q_pageRangeChanged(int index)
             totalPageLabel->setNum(totalPages);
             printer->setPrintRange(DPrinter::AllPages);
             printer->setFromTo(FIRST_PAGE, totalPages);
-            jumpPageEdit->setValue(1);
-            for (int i = 1; i < totalPageLabel->text().toInt(); i++) {
-                pagesrange.append(i);
-            }
-            pageRangeEdit->setText("1-" + totalPageLabel->text());
+            pview->setPageRange(FIRST_PAGE, totalPages);
         }
     } else if (index == PAGERANGE_CURRENT) {
         pagesrange.clear();
-        pagesrange.append(jumpPageEdit->value());
-        pageRangeEdit->setText(jumpPageEdit->text());
         printer->setPrintRange(DPrinter::CurrentPage);
+        pview->setPageRange(FIRST_PAGE, totalPages);
     } else {
-        pageRangeEdit->setText("");
         printer->setPrintRange(DPrinter::Selection);
         jumpPageEdit->setValue(1);
+        pageRangeEdit->lineEdit()->setPlaceholderText("1,3,5-7,11-15,18,21");
     }
     pview->setPageRange(pagesrange);
 }
