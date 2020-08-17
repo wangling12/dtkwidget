@@ -145,8 +145,7 @@ void DPrintPreviewDialogPrivate::initleft(QVBoxLayout *layout)
     jumpPageEdit->setMaximumWidth(50);
     jumpPageEdit->setButtonSymbols(QAbstractSpinBox::ButtonSymbols::NoButtons);
     DLabel *spaceLabel = new DLabel("/");
-    totalPageLabel = new DLabel("123");
-    jumpPageEdit->setRange(1, totalPageLabel->text().toInt());
+    totalPageLabel = new DLabel;
     nextPageBtn = new DIconButton(DStyle::SP_ArrowRight);
     lastBtn = new DIconButton(DStyle::SP_ArrowNext);
     lastBtn->setIcon(QIcon::fromTheme("printer_final"));
@@ -161,6 +160,10 @@ void DPrintPreviewDialogPrivate::initleft(QVBoxLayout *layout)
     pbottomlayout->addWidget(nextPageBtn);
     pbottomlayout->addSpacing(10);
     pbottomlayout->addWidget(lastBtn);
+
+    QRegExp reg("^([1-9][0-9]*)");
+    QRegExpValidator *val = new QRegExpValidator(reg);
+    jumpPageEdit->lineEdit()->setValidator(val);
 }
 
 void DPrintPreviewDialogPrivate::initright(QVBoxLayout *layout)
@@ -704,11 +707,14 @@ void DPrintPreviewDialogPrivate::initconnections()
     QObject::connect(colorModeCombo, SIGNAL(currentIndexChanged(int)), q, SLOT(_q_ColorModeChange(int)));
     QObject::connect(orientationgroup, SIGNAL(buttonClicked(int)), q, SLOT(_q_orientationChanged(int)));
     QObject::connect(jumpPageEdit, SIGNAL(valueChanged(int)), q, SLOT(_q_currentPageSpinChanged(int)));
+    QObject::connect(jumpPageEdit->lineEdit(), &QLineEdit::textChanged, q, [ = ](QString str) {
+        if (str.toInt() > totalPageLabel->text().toInt())
+            jumpPageEdit->lineEdit()->setText(totalPageLabel->text());
+    });
 
     QObject::connect(pview, &DPrintPreviewWidget::totalPages, [this](int pages) {
         totalPageLabel->setText(QString::number(pages));
         totalPages = pages;
-        jumpPageEdit->setRange(1, totalPages);
     });
     QObject::connect(pview, &DPrintPreviewWidget::pagesCountChanged, totalPageLabel, static_cast<void (QLabel::*)(int)>(&QLabel::setNum));
     QObject::connect(firstBtn, &DIconButton::clicked, pview, &DPrintPreviewWidget::turnBegin);
@@ -1239,7 +1245,6 @@ void DPrintPreviewDialogPrivate::_q_customPagesFinished()
     jumpPageEdit->setValue(1);
     QVector<int> page = checkDuplication(pagesrange);
     qDebug() << page << __func__;
-    jumpPageEdit->setRange(1, page.size());
     pview->setPageRange(page);
 }
 
