@@ -1012,6 +1012,7 @@ void DPrintPreviewDialogPrivate::_q_printerChanged(int index)
     Q_Q(DPrintPreviewDialog);
     qDebug() << printDeviceCombo->itemText(index);
     QString lastPaperSize = paperSizeCombo->currentText();
+    QString lastColormode = colorModeCombo->currentText();
     paperSizeCombo->clear();
     paperSizeCombo->blockSignals(true);
     if (index == printDeviceCombo->count() - 1) {
@@ -1022,9 +1023,11 @@ void DPrintPreviewDialogPrivate::_q_printerChanged(int index)
         duplexCheckBox->setEnabled(false);
         duplexCombo->clear();
         duplexCombo->setEnabled(false);
-        colorModeCombo->setEnabled(false);
         if (colorModeCombo->count() == 1)
             colorModeCombo->insertItem(0, q->tr("Color"));
+        colorModeCombo->setCurrentIndex(0);
+        colorModeCombo->setEnabled(false);
+        supportedColorMode = true;
         printBtn->setText(q->tr("Save"));
         paperSizeCombo->setCurrentIndex(1);
         QStringList pdfPaperSize = QStringList() << "A3" << "A4" << "A5" << "B4" << "B5" << "8K" << "16K";
@@ -1050,14 +1053,18 @@ void DPrintPreviewDialogPrivate::_q_printerChanged(int index)
         //判断当前打印机是否支持彩色打印，不支持彩色打印删除彩色打印选择选项，pdf不做判断
         QPlatformPrinterSupport *ps = QPlatformPrinterSupportPlugin::get();
         QPrintDevice currentDevice = ps->createPrintDevice(printDeviceCombo->currentText());
+        colorModeCombo->clear();
         if (!currentDevice.supportedColorModes().contains(QPrint::Color)) {
-            if (colorModeCombo->count() != 1)
-                colorModeCombo->removeItem(0);
-            supportedColorMode = true;
-        } else {
-            if (colorModeCombo->count() == 1)
-                colorModeCombo->insertItem(0, q->tr("Color"));
+            colorModeCombo->addItem(q->tr("Grayscale"));
             supportedColorMode = false;
+        } else {
+            colorModeCombo->addItems(QStringList() << q->tr("Color") << q->tr("Grayscale"));
+            if (colorModeCombo->currentText() == lastColormode) {
+                colorModeCombo->setCurrentIndex(0);
+            } else {
+                colorModeCombo->setCurrentIndex(1);
+            }
+            supportedColorMode = true;
         }
     }
     paperSizeCombo->blockSignals(false);
