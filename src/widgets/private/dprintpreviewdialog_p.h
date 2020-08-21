@@ -81,6 +81,7 @@ public:
     //printer
     DPrinter *printer;
     int totalPages = 0;
+    bool fontSizeMore = false;
 
     //control
     DPrintPreviewWidget *pview;
