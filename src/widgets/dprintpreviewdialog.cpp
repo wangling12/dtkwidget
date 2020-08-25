@@ -478,9 +478,9 @@ void DPrintPreviewDialogPrivate::initadvanceui()
     QRegExpValidator *scaleVal = new QRegExpValidator(scaleReg);
     scaleRateEdit->lineEdit()->setValidator(scaleVal);
     scaleRateEdit->setEnabledEmbedStyle(true);
-    scaleRateEdit->setMaximum(200);
-//    scaleRateEdit->lineEdit()->setText("");
-//    scaleRateEdit->lineEdit()->setPlaceholderText("90%");
+    scaleRateEdit->setRange(1, 200);
+    //    scaleRateEdit->lineEdit()->setText("");
+    //    scaleRateEdit->lineEdit()->setPlaceholderText("90%");
     scaleRateEdit->setFixedWidth(78);
     DLabel *scaleLabel = new DLabel("%");
     customlayout->addWidget(customSizeRadio);
