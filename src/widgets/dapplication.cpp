@@ -306,6 +306,8 @@ bool DApplicationPrivate::loadDtkTranslator(QList<QLocale> localeFallback)
 
     DPathBuf currentDir(QDir::currentPath());
     translateDirs << currentDir.join("translations");
+    
+    translateDirs << DPathBuf(":/translations");
 
 #ifdef DTK_STATIC_TRANSLATION
     translateDirs << DPathBuf(":/dtk/translations");
@@ -836,6 +838,7 @@ bool DApplication::setSingleInstance(const QString &key, SingleScope singleScope
  * \~english 1. ~/.local/share/APPNAME/translations;
  * \~english 2. /usr/local/share/APPNAME/translations;
  * \~english 3. /usr/share/APPNAME/translations;
+ * \~english 4. :/translations;
  * \~english APPNAME is the name of program executable.
  * \~english \param localeFallback, a list of fallback locale you want load.
  * \~english \return load success
@@ -847,6 +850,7 @@ bool DApplication::setSingleInstance(const QString &key, SingleScope singleScope
  * \~chinese 1. ~/.local/share/APPNAME/translations;
  * \~chinese 2. /usr/local/share/APPNAME/translations;
  * \~chinese 3. /usr/share/APPNAME/translations;
+ * \~chinese 4. :/translations;
  * \~chinese APPNAME即可执行文件的名称。
  *
  * \~chinese \param localeFallback 指定了回退的locale列表，默认只有系统locale。
@@ -870,6 +874,7 @@ bool DApplication::loadTranslator(QList<QLocale> localeFallback)
     translateDirs << runDir.join("translations");
     DPathBuf currentDir(QDir::currentPath());
     translateDirs << currentDir.join("translations");
+    translateDirs << DPathBuf(":/translations");
 
 #ifdef DTK_STATIC_TRANSLATION
     translateDirs << DPathBuf(":/dtk/translations");
